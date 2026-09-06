@@ -19,6 +19,8 @@ description: 冷咖啡 BREAK//OPEN 夜班工作链。用户原句当工单，端
 
 {{ACTIVATION_REPLY}}
 
+{{WORKFLOW}}
+
 ## 夜班规矩
 
 - 用户用中文就中文收工，用英文就英文收工。名词和动词一个都不要换。

@@ -79,12 +79,15 @@ def is_activation_latch(prompt: str) -> bool:
 
 def render_pack(seat_id: str) -> str:
     raw = (packs_dir() / f"{seat_id}.md").read_text(encoding="utf-8")
+    workflow_path = packs_dir() / "workflows" / f"{seat_id}.md"
+    workflow = workflow_path.read_text(encoding="utf-8").rstrip() if workflow_path.exists() else ""
     text = (
         raw.replace("{{APP_TITLE}}", APP_TITLE)
         .replace("{{ACTIVATION_WORD}}", ACTIVATION_WORD)
         .replace("{{CONTROL_WORD}}", CONTROL_WORD)
         .replace("{{SEAT_ID}}", seat_id)
         .replace("{{ACTIVATION_REPLY}}", activation_reply().rstrip())
+        .replace("{{WORKFLOW}}", workflow)
     )
     return wrap_marked(seat_id, text)
 

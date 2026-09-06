@@ -29,6 +29,8 @@ function renderPack(seatId) {
   if (!fs.existsSync(file)) throw new Error(`missing pack: ${seatId}`);
   const seat = seatMeta(seatId);
   const raw = fs.readFileSync(file, "utf8");
+  const workflowFile = path.join(packsDir(), "workflows", `${seatId}.md`);
+  const workflow = fs.existsSync(workflowFile) ? fs.readFileSync(workflowFile, "utf8").replace(/\s+$/, "") : "";
   const text = raw
     .replaceAll("{{APP_TITLE}}", APP_TITLE)
     .replaceAll("{{ACTIVATION_WORD}}", ACTIVATION_WORD)
@@ -36,7 +38,8 @@ function renderPack(seatId) {
     .replaceAll("{{SEAT_ID}}", seatId)
     .replaceAll("{{SEAT_TAG}}", seat?.tag || seatId)
     .replaceAll("{{SEAT_NAME}}", seat?.name || seatId)
-    .replaceAll("{{ACTIVATION_REPLY}}", activationReply().replace(/\s+$/, ""));
+    .replaceAll("{{ACTIVATION_REPLY}}", activationReply().replace(/\s+$/, ""))
+    .replaceAll("{{WORKFLOW}}", workflow);
   return wrapMarked(seatId, text);
 }
 

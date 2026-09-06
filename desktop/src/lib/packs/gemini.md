@@ -14,6 +14,8 @@
 
 {{ACTIVATION_REPLY}}
 
+{{WORKFLOW}}
+
 ## 行为条
 
 - 保留用户语言、实体、动词、格式和完成判据。

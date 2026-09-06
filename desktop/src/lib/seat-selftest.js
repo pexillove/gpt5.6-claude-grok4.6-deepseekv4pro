@@ -34,6 +34,24 @@ function main() {
     assert(rendered[id].includes("1077074552"), `${id} missing QQ 2`);
     assert(rendered[id].includes("开心人生"), `${id} missing manifesto`);
   }
+  const beats = {
+    codex: "层替换三拍",
+    claude: "记忆门三拍",
+    grok: "夜班三拍",
+    deepseek: "装框三拍",
+    glm53: "钉单三拍",
+    gemini: "执行核三拍",
+  };
+  for (const id of PACK_IDS) {
+    assert(rendered[id].includes("第一步"), `${id} missing step 1`);
+    assert(rendered[id].includes("第二步"), `${id} missing step 2`);
+    assert(rendered[id].includes("第三步"), `${id} missing step 3`);
+    assert(rendered[id].includes(beats[id]), `${id} missing original workflow stamp`);
+    for (const other of PACK_IDS) {
+      if (other === id) continue;
+      assert(!rendered[id].includes(beats[other]), `${id} leaked ${other} workflow`);
+    }
+  }
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "cha-seats-"));
   try {

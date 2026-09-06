@@ -37,6 +37,23 @@ def main() -> int:
     for seat, body in bodies.items():
         if "1057540028" not in body or "开心人生" not in body:
             raise SystemExit(f"{seat} missing activation page")
+    beats = {
+        "codex": "层替换三拍",
+        "claude": "记忆门三拍",
+        "grok": "夜班三拍",
+        "deepseek": "装框三拍",
+        "glm53": "钉单三拍",
+        "gemini": "执行核三拍",
+    }
+    for seat, body in bodies.items():
+        for mark in ("第一步", "第二步", "第三步"):
+            if mark not in body:
+                raise SystemExit(f"{seat} missing {mark}")
+        if beats[seat] not in body:
+            raise SystemExit(f"{seat} missing original workflow stamp")
+        for other, stamp in beats.items():
+            if other != seat and stamp in body:
+                raise SystemExit(f"{seat} leaked {other} workflow")
     with tempfile.TemporaryDirectory(prefix="cha-seats-") as raw:
         root = Path(raw)
         for seat in PACK_IDS:
