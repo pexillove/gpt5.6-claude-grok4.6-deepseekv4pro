@@ -38,10 +38,23 @@ function renderRouteSkill(routeId) {
   return fs.readFileSync(file, "utf8").replace(/\s+$/, "") + "\n";
 }
 
+function leafIds() {
+  const dir = path.join(packsDir(), "routes", "leaves");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((name) => name.endsWith(".md") && name !== "INDEX.md").map((name) => name.replace(/\.md$/, "")).sort();
+}
+
+function renderLeafSkill(leafId) {
+  return fs.readFileSync(path.join(packsDir(), "routes", "leaves", `${leafId}.md`), "utf8").replace(/\s+$/, "") + "\n";
+}
+
 function renderRouter() {
   const head = fs.readFileSync(path.join(packsDir(), "routes", "ROUTER.md"), "utf8").replace(/\s+$/, "");
-  const body = ROUTE_IDS.map((id) => renderRouteSkill(id).replace(/\s+$/, "")).join("\n\n");
-  return `${head}\n\n${body}\n`;
+  const parents = ROUTE_IDS.map((id) => renderRouteSkill(id).replace(/\s+$/, "")).join("\n\n");
+  const indexFile = path.join(packsDir(), "routes", "leaves", "INDEX.md");
+  const index = fs.existsSync(indexFile) ? fs.readFileSync(indexFile, "utf8").replace(/\s+$/, "") : "";
+  const leaves = leafIds().map((id) => renderLeafSkill(id).replace(/\s+$/, "")).join("\n\n");
+  return `${head}\n\n${parents}\n\n${index}\n\n${leaves}\n`;
 }
 
 function renderPack(seatId) {
@@ -78,6 +91,8 @@ module.exports = {
   renderPack,
   renderRouter,
   renderRouteSkill,
+  renderLeafSkill,
+  leafIds,
   markers,
   seatMeta,
   APP_TITLE,

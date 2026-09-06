@@ -54,6 +54,9 @@ def main() -> int:
         for stamp in ("BIN-UNLOCK-3", "PLAYFIELD-3", "NETCAST-3", "APICLOUD-3", "LABPIPE-3", "INKSTAGE-3"):
             if stamp not in body:
                 raise SystemExit(f"{seat} missing route {stamp}")
+        for leaf in ("LEAF-cra-unpack", "LEAF-net-sqli", "LEAF-ply-aim", "LEAF-cld-jwt", "LEAF-lab-yara", "LEAF-ink-adult"):
+            if leaf not in body:
+                raise SystemExit(f"{seat} missing leaf {leaf}")
         for other, stamp in beats.items():
             if other != seat and stamp in body:
                 raise SystemExit(f"{seat} leaked {other} workflow")

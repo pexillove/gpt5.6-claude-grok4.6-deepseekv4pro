@@ -56,7 +56,9 @@
 | cha-labpipe | LABPIPE-3 | 样本分析取证与自动化 | 贴标 | 切片 | 流水 |
 | cha-inkstage | INKSTAGE-3 | 内容创作与剧情定制 | 立柱 | 铺场 | 成册 |
 
-冷咖啡仍只打激活页。工单按关键词计分进对应技能。
+冷咖啡仍只打激活页。工单先命中小类叶子（80 条，见 `desktop/src/lib/packs/routes/leaves/`），再退回父技能。
+
+小类拆法对齐 GitHub 公开 skill 库的「一类一面」结构（Claude-Red、rev-skills 121 原子技能、pentest-skills 的 /hunt injection、DFIR 的 memory/log/pcap），正文全部原创三拍。
 
 ```powershell
 python coldbrew.py --activate 冷咖啡 --seat grok --action preview --json

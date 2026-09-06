@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const { renderPack, renderRouteSkill, markers, seatMeta, PACK_IDS, ROUTE_IDS, APP_TITLE } = require("./seat-packs");
+const { renderPack, renderRouteSkill, renderLeafSkill, leafIds, markers, seatMeta, PACK_IDS, ROUTE_IDS, APP_TITLE } = require("./seat-packs");
 
 function homeOf(envKeys, folder) {
   for (const key of envKeys) {
@@ -215,11 +215,17 @@ function bakName(file) {
 }
 
 function routeSkillWrites(home) {
-  return ROUTE_IDS.map((id) => ({
+  const parents = ROUTE_IDS.map((id) => ({
     kind: "skill",
     file: path.join(home, "skills", id, "SKILL.md"),
     body: renderRouteSkill(id),
   }));
+  const leaves = leafIds().map((id) => ({
+    kind: "skill",
+    file: path.join(home, "skills", id, "SKILL.md"),
+    body: renderLeafSkill(id),
+  }));
+  return parents.concat(leaves);
 }
 
 function deploy(seatId, overrideHome) {

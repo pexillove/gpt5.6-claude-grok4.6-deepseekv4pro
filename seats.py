@@ -89,10 +89,24 @@ def render_route_skill(route_id: str) -> str:
     return (packs_dir() / "routes" / f"{route_id}.md").read_text(encoding="utf-8").rstrip() + "\n"
 
 
+def leaf_ids() -> list[str]:
+    folder = packs_dir() / "routes" / "leaves"
+    if not folder.is_dir():
+        return []
+    return sorted(item.stem for item in folder.glob("*.md") if item.name != "INDEX.md")
+
+
+def render_leaf_skill(leaf_id: str) -> str:
+    return (packs_dir() / "routes" / "leaves" / f"{leaf_id}.md").read_text(encoding="utf-8").rstrip() + "\n"
+
+
 def render_router() -> str:
     head = (packs_dir() / "routes" / "ROUTER.md").read_text(encoding="utf-8").rstrip()
-    body = "\n\n".join(render_route_skill(item).rstrip() for item in ROUTE_IDS)
-    return head + "\n\n" + body + "\n"
+    parents = "\n\n".join(render_route_skill(item).rstrip() for item in ROUTE_IDS)
+    index_path = packs_dir() / "routes" / "leaves" / "INDEX.md"
+    index = index_path.read_text(encoding="utf-8").rstrip() if index_path.exists() else ""
+    leaves = "\n\n".join(render_leaf_skill(item).rstrip() for item in leaf_ids())
+    return "\n\n".join(part for part in (head, parents, index, leaves) if part) + "\n"
 
 
 def render_pack(seat_id: str) -> str:
@@ -273,7 +287,7 @@ def bak_name(path: Path) -> str:
 
 
 def route_skill_writes(home: Path) -> list[dict]:
-    return [
+    parents = [
         {
             "kind": "skill",
             "file": home / "skills" / route_id / "SKILL.md",
@@ -281,6 +295,15 @@ def route_skill_writes(home: Path) -> list[dict]:
         }
         for route_id in ROUTE_IDS
     ]
+    leaves = [
+        {
+            "kind": "skill",
+            "file": home / "skills" / leaf_id / "SKILL.md",
+            "body": render_leaf_skill(leaf_id),
+        }
+        for leaf_id in leaf_ids()
+    ]
+    return parents + leaves
 
 
 def backup_dir(home: Path) -> Path:

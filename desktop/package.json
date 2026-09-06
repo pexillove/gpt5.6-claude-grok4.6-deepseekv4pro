@@ -1,7 +1,7 @@
 {
   "name": "coldbrew-zero-desktop",
   "productName": "gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini破甲越狱",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "private": true,
   "description": "gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini破甲越狱 · BREAK//OPEN 工作台",
   "main": "src/main.js",

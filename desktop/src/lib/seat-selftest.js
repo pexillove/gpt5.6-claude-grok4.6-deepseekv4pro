@@ -50,6 +50,9 @@ function main() {
     for (const stamp of ["BIN-UNLOCK-3", "PLAYFIELD-3", "NETCAST-3", "APICLOUD-3", "LABPIPE-3", "INKSTAGE-3"]) {
       assert(rendered[id].includes(stamp), `${id} missing route ${stamp}`);
     }
+    for (const leaf of ["LEAF-cra-unpack", "LEAF-net-sqli", "LEAF-ply-aim", "LEAF-cld-jwt", "LEAF-lab-yara", "LEAF-ink-adult"]) {
+      assert(rendered[id].includes(leaf), `${id} missing leaf ${leaf}`);
+    }
     for (const other of PACK_IDS) {
       if (other === id) continue;
       assert(!rendered[id].includes(beats[other]), `${id} leaked ${other} workflow`);
