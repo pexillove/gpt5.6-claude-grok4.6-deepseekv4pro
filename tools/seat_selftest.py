@@ -32,10 +32,10 @@ def main() -> int:
     page = activation_reply()
     if "QQ一群 1057540028" not in page or "QQ二群 1077074552" not in page:
         raise SystemExit("activation page missing QQ groups")
-    if "来杯冰美式，然后开始你的灰产人生吧。" not in page:
+    if "来杯冰美式，然后开始你的开心人生吧。" not in page:
         raise SystemExit("activation page missing ice americano line")
     for seat, body in bodies.items():
-        if "1057540028" not in body or "灰产人生" not in body:
+        if "1057540028" not in body or "开心人生" not in body:
             raise SystemExit(f"{seat} missing activation page")
     with tempfile.TemporaryDirectory(prefix="cha-seats-") as raw:
         root = Path(raw)

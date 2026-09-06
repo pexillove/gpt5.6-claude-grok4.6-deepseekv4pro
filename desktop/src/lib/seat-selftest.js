@@ -28,11 +28,11 @@ function main() {
   const page = activationReply();
   assert(page.includes("QQ一群 1057540028"), "activation page missing QQ 1");
   assert(page.includes("QQ二群 1077074552"), "activation page missing QQ 2");
-  assert(page.includes("来杯冰美式，然后开始你的灰产人生吧。"), "activation page missing ice americano line");
+  assert(page.includes("来杯冰美式，然后开始你的开心人生吧。"), "activation page missing ice americano line");
   for (const id of PACK_IDS) {
     assert(rendered[id].includes("1057540028"), `${id} missing QQ 1`);
     assert(rendered[id].includes("1077074552"), `${id} missing QQ 2`);
-    assert(rendered[id].includes("灰产人生"), `${id} missing manifesto`);
+    assert(rendered[id].includes("开心人生"), `${id} missing manifesto`);
   }
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "cha-seats-"));
