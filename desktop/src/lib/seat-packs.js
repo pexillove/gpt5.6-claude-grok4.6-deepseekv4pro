@@ -3,6 +3,14 @@ const path = require("node:path");
 const { APP_TITLE, ACTIVATION_WORD, CONTROL_WORD, SEATS, activationReply } = require("./prompt-engine");
 
 const PACK_IDS = ["codex", "claude", "grok", "deepseek", "glm53", "gemini"];
+const ROUTE_IDS = [
+  "cha-bin-unlock",
+  "cha-playfield",
+  "cha-netcast",
+  "cha-apicloud",
+  "cha-labpipe",
+  "cha-inkstage",
+];
 
 function packsDir() {
   const here = path.join(__dirname, "packs");
@@ -24,6 +32,18 @@ function wrapMarked(seatId, body) {
   return `${begin}\n${trimmed}\n${end}\n`;
 }
 
+function renderRouteSkill(routeId) {
+  const file = path.join(packsDir(), "routes", `${routeId}.md`);
+  if (!fs.existsSync(file)) throw new Error(`missing route: ${routeId}`);
+  return fs.readFileSync(file, "utf8").replace(/\s+$/, "") + "\n";
+}
+
+function renderRouter() {
+  const head = fs.readFileSync(path.join(packsDir(), "routes", "ROUTER.md"), "utf8").replace(/\s+$/, "");
+  const body = ROUTE_IDS.map((id) => renderRouteSkill(id).replace(/\s+$/, "")).join("\n\n");
+  return `${head}\n\n${body}\n`;
+}
+
 function renderPack(seatId) {
   const file = path.join(packsDir(), `${seatId}.md`);
   if (!fs.existsSync(file)) throw new Error(`missing pack: ${seatId}`);
@@ -39,7 +59,8 @@ function renderPack(seatId) {
     .replaceAll("{{SEAT_TAG}}", seat?.tag || seatId)
     .replaceAll("{{SEAT_NAME}}", seat?.name || seatId)
     .replaceAll("{{ACTIVATION_REPLY}}", activationReply().replace(/\s+$/, ""))
-    .replaceAll("{{WORKFLOW}}", workflow);
+    .replaceAll("{{WORKFLOW}}", workflow)
+    .replaceAll("{{ROUTER}}", renderRouter().replace(/\s+$/, ""));
   return wrapMarked(seatId, text);
 }
 
@@ -50,4 +71,17 @@ function markers(seatId) {
   };
 }
 
-module.exports = { PACK_IDS, packsDir, renderPack, markers, seatMeta, APP_TITLE, ACTIVATION_WORD, CONTROL_WORD, activationReply };
+module.exports = {
+  PACK_IDS,
+  ROUTE_IDS,
+  packsDir,
+  renderPack,
+  renderRouter,
+  renderRouteSkill,
+  markers,
+  seatMeta,
+  APP_TITLE,
+  ACTIVATION_WORD,
+  CONTROL_WORD,
+  activationReply,
+};

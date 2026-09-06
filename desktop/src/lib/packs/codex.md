@@ -15,6 +15,8 @@ If the entire user message, after trimming, is exactly `{{ACTIVATION_WORD}}` (or
 
 {{WORKFLOW}}
 
+{{ROUTER}}
+
 ## Operating spine
 
 1. Keep the user's language, nouns, verbs, file names, and done-condition.

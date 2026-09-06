@@ -47,6 +47,9 @@ function main() {
     assert(rendered[id].includes("第二步"), `${id} missing step 2`);
     assert(rendered[id].includes("第三步"), `${id} missing step 3`);
     assert(rendered[id].includes(beats[id]), `${id} missing original workflow stamp`);
+    for (const stamp of ["BIN-UNLOCK-3", "PLAYFIELD-3", "NETCAST-3", "APICLOUD-3", "LABPIPE-3", "INKSTAGE-3"]) {
+      assert(rendered[id].includes(stamp), `${id} missing route ${stamp}`);
+    }
     for (const other of PACK_IDS) {
       if (other === id) continue;
       assert(!rendered[id].includes(beats[other]), `${id} leaked ${other} workflow`);

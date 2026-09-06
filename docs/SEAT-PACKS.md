@@ -43,6 +43,21 @@
 
 正文模板在 `desktop/src/lib/packs/`。桌面席位的预览 / 运行 / 检查 / 恢复四键对六个模型同样生效。
 
+## 六类路由技能（原创）
+
+激活页六块能力对应六条技能，稿子在 `desktop/src/lib/packs/routes/`。格式对照公开的 Claude Code `SKILL.md`（YAML `name` + `description` + 正文），内容另写。运行席位时写入各模型 `skills/<name>/SKILL.md`，并织进越狱包。
+
+| 技能 | 戳 | 能力块 | 第一步 | 第二步 | 第三步 |
+| --- | --- | --- | --- | --- | --- |
+| cha-bin-unlock | BIN-UNLOCK-3 | 软件破解与逆向分析 | 揭盖 | 追链 | 落地 |
+| cha-playfield | PLAYFIELD-3 | 游戏安全与外挂研究 | 锁框 | 接线 | 回看 |
+| cha-netcast | NETCAST-3 | 网络安全与渗透测试 | 铺图 | 试刃 | 成卷 |
+| cha-apicloud | APICLOUD-3 | 接口云端与代码安全 | 描口 | 拧阀 | 列表 |
+| cha-labpipe | LABPIPE-3 | 样本分析取证与自动化 | 贴标 | 切片 | 流水 |
+| cha-inkstage | INKSTAGE-3 | 内容创作与剧情定制 | 立柱 | 铺场 | 成册 |
+
+冷咖啡仍只打激活页。工单按关键词计分进对应技能。
+
 ```powershell
 python coldbrew.py --activate 冷咖啡 --seat grok --action preview --json
 python coldbrew.py --activate 冷咖啡 --seat claude --action deploy --home $env:TEMP\cha-claude-home --json

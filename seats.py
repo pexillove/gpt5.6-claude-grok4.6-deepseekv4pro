@@ -13,6 +13,14 @@ APP_TITLE = "gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini破甲越狱"
 ACTIVATION_WORD = "冷咖啡"
 CONTROL_WORD = "BREAK//OPEN"
 PACK_IDS = ("codex", "claude", "grok", "deepseek", "glm53", "gemini")
+ROUTE_IDS = (
+    "cha-bin-unlock",
+    "cha-playfield",
+    "cha-netcast",
+    "cha-apicloud",
+    "cha-labpipe",
+    "cha-inkstage",
+)
 SEAT_ALIASES = {
     "codex": "codex",
     "gpt-6-astra": "codex",
@@ -77,6 +85,16 @@ def is_activation_latch(prompt: str) -> bool:
     return str(prompt or "").strip() in ACTIVATION_LATCHES
 
 
+def render_route_skill(route_id: str) -> str:
+    return (packs_dir() / "routes" / f"{route_id}.md").read_text(encoding="utf-8").rstrip() + "\n"
+
+
+def render_router() -> str:
+    head = (packs_dir() / "routes" / "ROUTER.md").read_text(encoding="utf-8").rstrip()
+    body = "\n\n".join(render_route_skill(item).rstrip() for item in ROUTE_IDS)
+    return head + "\n\n" + body + "\n"
+
+
 def render_pack(seat_id: str) -> str:
     raw = (packs_dir() / f"{seat_id}.md").read_text(encoding="utf-8")
     workflow_path = packs_dir() / "workflows" / f"{seat_id}.md"
@@ -88,6 +106,7 @@ def render_pack(seat_id: str) -> str:
         .replace("{{SEAT_ID}}", seat_id)
         .replace("{{ACTIVATION_REPLY}}", activation_reply().rstrip())
         .replace("{{WORKFLOW}}", workflow)
+        .replace("{{ROUTER}}", render_router().rstrip())
     )
     return wrap_marked(seat_id, text)
 
@@ -209,17 +228,20 @@ def plan(seat_id: str, override: str | os.PathLike[str] | None = None) -> dict:
             {"kind": "marked", "file": home / "AGENTS.md"},
             {"kind": "toml", "file": home / "config.toml", "key": "model_instructions_file", "value": posix_path(instruct)},
         ]
+        writes += route_skill_writes(home)
     elif seat_id == "claude":
         writes = [
             {"kind": "marked", "file": home / "CLAUDE.md"},
             {"kind": "file", "file": home / "rules" / "cha-breakopen.md"},
         ]
+        writes += route_skill_writes(home)
     elif seat_id == "grok":
         writes = [
             {"kind": "marked", "file": home / "AGENTS.md"},
             {"kind": "file", "file": home / "rules" / "cha-breakopen.md"},
             {"kind": "file", "file": home / "skills" / "cha-breakopen" / "SKILL.md"},
         ]
+        writes += route_skill_writes(home)
     elif seat_id == "deepseek":
         hermes = extra["hermes"]
         writes = [
@@ -227,18 +249,38 @@ def plan(seat_id: str, override: str | os.PathLike[str] | None = None) -> dict:
             {"kind": "marked", "file": hermes / "SOUL.md", "home": hermes},
             {"kind": "file", "file": hermes / "skills" / "cha-deepseek" / "SKILL.md", "home": hermes},
         ]
+        writes += route_skill_writes(home)
+        writes += [{**item, "home": hermes} for item in route_skill_writes(hermes)]
     elif seat_id == "glm53":
         zcode = extra["zcode"]
         writes = [
             {"kind": "marked", "file": home / "GLM.md"},
             {"kind": "marked", "file": zcode / "AGENTS.md", "home": zcode},
         ]
+        writes += route_skill_writes(home)
+        writes += [{**item, "home": zcode} for item in route_skill_writes(zcode)]
     else:
         writes = [
             {"kind": "marked", "file": home / "GEMINI.md"},
             {"kind": "settings", "file": home / "settings.json", "name": "GEMINI.md"},
         ]
+        writes += route_skill_writes(home)
     return {"home": home, "writes": writes, "begin": begin, "end": end, "pack": pack}
+
+
+def bak_name(path: Path) -> str:
+    return "__".join(path.parts[-3:]) + ".bak"
+
+
+def route_skill_writes(home: Path) -> list[dict]:
+    return [
+        {
+            "kind": "skill",
+            "file": home / "skills" / route_id / "SKILL.md",
+            "body": render_route_skill(route_id),
+        }
+        for route_id in ROUTE_IDS
+    ]
 
 
 def backup_dir(home: Path) -> Path:
@@ -268,7 +310,7 @@ def deploy(seat_id: str, home: str | os.PathLike[str] | None = None) -> dict:
     for item in spec["writes"]:
         target: Path = item["file"]
         nest = item.get("home") or spec["home"]
-        bak = backup_dir(nest) / f"{target.name}.bak"
+        bak = backup_dir(nest) / bak_name(target)
         if _snapshot_once(target, bak):
             snapped.append(str(bak))
         if item["kind"] in {"file", "marked"}:
@@ -282,6 +324,9 @@ def deploy(seat_id: str, home: str | os.PathLike[str] | None = None) -> dict:
             written.append(str(target))
         elif item["kind"] == "settings":
             patch_json_filename(target, item["name"])
+            written.append(str(target))
+        elif item["kind"] == "skill":
+            _write(target, item["body"])
             written.append(str(target))
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     state = {
@@ -313,6 +358,8 @@ def verify(seat_id: str, home: str | os.PathLike[str] | None = None) -> dict:
             marker = "model_instructions_file" in text
         elif item["kind"] == "settings":
             marker = exists
+        elif item["kind"] == "skill":
+            marker = exists and item.get("file") and item["file"].parent.name in text
         checks.append({"file": str(target), "exists": exists, "marker": marker, "bytes": len(text.encode("utf-8"))})
     ok = all(item["exists"] and item["marker"] for item in checks)
     return {
@@ -332,7 +379,7 @@ def restore(seat_id: str, home: str | os.PathLike[str] | None = None) -> dict:
     for item in spec["writes"]:
         target: Path = item["file"]
         nest = item.get("home") or spec["home"]
-        bak = backup_dir(nest) / f"{target.name}.bak"
+        bak = backup_dir(nest) / bak_name(target)
         if bak.exists():
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(bak.read_bytes())
@@ -341,6 +388,10 @@ def restore(seat_id: str, home: str | os.PathLike[str] | None = None) -> dict:
         if not target.exists():
             continue
         if item["kind"] in {"toml", "settings"}:
+            continue
+        if item["kind"] == "skill":
+            target.unlink()
+            restored.append(str(target))
             continue
         text = target.read_text(encoding="utf-8")
         if item["kind"] == "file" and begin in text:

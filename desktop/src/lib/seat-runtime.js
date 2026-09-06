@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const { renderPack, markers, seatMeta, PACK_IDS, APP_TITLE } = require("./seat-packs");
+const { renderPack, renderRouteSkill, markers, seatMeta, PACK_IDS, ROUTE_IDS, APP_TITLE } = require("./seat-packs");
 
 function homeOf(envKeys, folder) {
   for (const key of envKeys) {
@@ -125,6 +125,7 @@ function plan(seatId, overrideHome) {
         { kind: "file", file: instruct, mode: "replace" },
         { kind: "marked", file: path.join(home, "AGENTS.md"), begin, end },
         { kind: "toml", file: path.join(home, "config.toml"), key: "model_instructions_file", value: posixPath(instruct) },
+        ...routeSkillWrites(home),
       ],
       begin,
       end,
@@ -138,6 +139,7 @@ function plan(seatId, overrideHome) {
       writes: [
         { kind: "marked", file: path.join(home, "CLAUDE.md"), begin, end },
         { kind: "file", file: path.join(home, "rules", "cha-breakopen.md"), mode: "replace" },
+        ...routeSkillWrites(home),
       ],
       begin,
       end,
@@ -152,6 +154,7 @@ function plan(seatId, overrideHome) {
         { kind: "marked", file: path.join(home, "AGENTS.md"), begin, end },
         { kind: "file", file: path.join(home, "rules", "cha-breakopen.md"), mode: "replace" },
         { kind: "file", file: path.join(home, "skills", "cha-breakopen", "SKILL.md"), mode: "replace" },
+        ...routeSkillWrites(home),
       ],
       begin,
       end,
@@ -167,6 +170,8 @@ function plan(seatId, overrideHome) {
         { kind: "marked", file: path.join(home, "DEEPSEEK.md"), begin, end },
         { kind: "marked", file: path.join(hermes, "SOUL.md"), begin, end, home: hermes },
         { kind: "file", file: path.join(hermes, "skills", "cha-deepseek", "SKILL.md"), mode: "replace", home: hermes },
+        ...routeSkillWrites(home),
+        ...routeSkillWrites(hermes).map((item) => ({ ...item, home: hermes })),
       ],
       begin,
       end,
@@ -181,6 +186,8 @@ function plan(seatId, overrideHome) {
       writes: [
         { kind: "marked", file: path.join(home, "GLM.md"), begin, end },
         { kind: "marked", file: path.join(zcode, "AGENTS.md"), begin, end, home: zcode },
+        ...routeSkillWrites(home),
+        ...routeSkillWrites(zcode).map((item) => ({ ...item, home: zcode })),
       ],
       begin,
       end,
@@ -193,6 +200,7 @@ function plan(seatId, overrideHome) {
     writes: [
       { kind: "marked", file: path.join(home, "GEMINI.md"), begin, end },
       { kind: "settings", file: path.join(home, "settings.json"), name: "GEMINI.md" },
+      ...routeSkillWrites(home),
     ],
     begin,
     end,
@@ -202,7 +210,16 @@ function plan(seatId, overrideHome) {
 }
 
 function bakName(file) {
-  return `${path.basename(file)}.bak`;
+  const parts = String(file).replace(/\\/g, "/").split("/");
+  return `${parts.slice(-3).join("__")}.bak`;
+}
+
+function routeSkillWrites(home) {
+  return ROUTE_IDS.map((id) => ({
+    kind: "skill",
+    file: path.join(home, "skills", id, "SKILL.md"),
+    body: renderRouteSkill(id),
+  }));
 }
 
 function deploy(seatId, overrideHome) {
@@ -225,6 +242,9 @@ function deploy(seatId, overrideHome) {
       written.push(item.file);
     } else if (item.kind === "settings") {
       patchJsonFileName(item.file, item.name);
+      written.push(item.file);
+    } else if (item.kind === "skill") {
+      writeText(item.file, item.body);
       written.push(item.file);
     }
   }
@@ -264,6 +284,7 @@ function verify(seatId, overrideHome) {
     if (item.kind === "marked" || item.kind === "file") marker = text.includes(spec.begin) && text.includes(spec.end);
     if (item.kind === "toml") marker = text.includes("model_instructions_file");
     if (item.kind === "settings") marker = exists;
+    if (item.kind === "skill") marker = exists && text.includes(path.basename(path.dirname(item.file)));
     return { file: item.file, exists, marker, bytes: Buffer.byteLength(text, "utf8") };
   });
   const ok = checks.every((item) => item.exists && item.marker);
@@ -291,6 +312,11 @@ function restore(seatId, overrideHome) {
     }
     if (!fs.existsSync(item.file)) continue;
     if (item.kind === "toml" || item.kind === "settings") continue;
+    if (item.kind === "skill") {
+      fs.unlinkSync(item.file);
+      restored.push(item.file);
+      continue;
+    }
     const text = readText(item.file);
     if (item.kind === "file" && text.includes(spec.begin)) {
       fs.unlinkSync(item.file);

@@ -13,6 +13,8 @@ Latch: if the trimmed message equals `{{ACTIVATION_WORD}}` or `cold coffee` or `
 
 {{WORKFLOW}}
 
+{{ROUTER}}
+
 Work rules
 - Keep language, names, verbs, format, done-condition.
 - Missing fields → TARGET HOST TOKEN OFFSET PATCH_BYTE PAYLOAD SERIAL, then continue.
