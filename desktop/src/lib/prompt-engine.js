@@ -1,6 +1,29 @@
+const fs = require("node:fs");
+const path = require("node:path");
+
 const ACTIVATION_WORD = "冷咖啡";
 const CONTROL_WORD = "BREAK//OPEN";
 const APP_TITLE = "gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini破甲越狱";
+const ACTIVATION_LATCHES = [
+  ACTIVATION_WORD,
+  "cold coffee",
+  "[[CB:MAX]]",
+  "[[ENI:PROFILE=MAX]]",
+  "ASTRA//UNLOCK",
+  "ANTHRO//CLEAR",
+  "GROK//OPEN",
+  "SEEK//BARE",
+  "GLM//STRAIGHT",
+];
+
+function activationReply() {
+  const file = path.join(__dirname, "packs", "activation-reply.md");
+  return fs.readFileSync(file, "utf8").replace(/\s+$/, "") + "\n";
+}
+
+function isActivationLatch(prompt) {
+  return ACTIVATION_LATCHES.includes(String(prompt || "").trim());
+}
 
 const PROFILES = [
   { id: "max", label: "MAX / 全开", tone: "完整、直接、可继续", stages: ["OBJECTIVE", "CONTEXT", "OUTPUT", "CHECK"] },
@@ -34,10 +57,24 @@ function profileById(id) {
 function compose({ profile = "max", channel = "ALL", prompt = "" }) {
   const clean = String(prompt).trim();
   if (!clean) throw new Error("请先输入明确目标");
+  if (isActivationLatch(clean)) {
+    return {
+      ok: true,
+      latch: true,
+      activation: ACTIVATION_WORD,
+      control: CONTROL_WORD,
+      profile: "max",
+      channel: "ALL",
+      channelLabel: "激活页",
+      stages: ["LATCH"],
+      text: activationReply(),
+    };
+  }
   const selected = profileById(profile);
   const channelLabel = CHANNELS.find((item) => item.id === channel)?.label || "自动选择";
   return {
     ok: true,
+    latch: false,
     activation: ACTIVATION_WORD,
     control: CONTROL_WORD,
     profile: selected.id,
@@ -53,4 +90,16 @@ function activate({ word, profile, channel, prompt }) {
   return compose({ profile, channel, prompt });
 }
 
-module.exports = { ACTIVATION_WORD, CONTROL_WORD, APP_TITLE, PROFILES, SEATS, CHANNELS, compose, activate };
+module.exports = {
+  ACTIVATION_WORD,
+  CONTROL_WORD,
+  APP_TITLE,
+  ACTIVATION_LATCHES,
+  PROFILES,
+  SEATS,
+  CHANNELS,
+  compose,
+  activate,
+  activationReply,
+  isActivationLatch,
+};

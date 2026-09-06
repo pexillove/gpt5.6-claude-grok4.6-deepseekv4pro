@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from seats import PACK_IDS, deploy, preview, render_pack, restore, verify  # noqa: E402
+from seats import PACK_IDS, activation_reply, deploy, preview, render_pack, restore, verify  # noqa: E402
 
 STAMPS = {
     "codex": "ASTRA//UNLOCK",
@@ -29,6 +29,14 @@ def main() -> int:
     for seat, stamp in STAMPS.items():
         if stamp not in bodies[seat]:
             raise SystemExit(f"{seat} missing original stamp")
+    page = activation_reply()
+    if "QQ一群 1057540028" not in page or "QQ二群 1077074552" not in page:
+        raise SystemExit("activation page missing QQ groups")
+    if "来杯冰美式，然后开始你的灰产人生吧。" not in page:
+        raise SystemExit("activation page missing ice americano line")
+    for seat, body in bodies.items():
+        if "1057540028" not in body or "灰产人生" not in body:
+            raise SystemExit(f"{seat} missing activation page")
     with tempfile.TemporaryDirectory(prefix="cha-seats-") as raw:
         root = Path(raw)
         for seat in PACK_IDS:

@@ -56,6 +56,27 @@ def wrap_marked(seat_id: str, body: str) -> str:
     return f"{begin}\n{text}{end}\n"
 
 
+def activation_reply() -> str:
+    return (packs_dir() / "activation-reply.md").read_text(encoding="utf-8").rstrip() + "\n"
+
+
+ACTIVATION_LATCHES = (
+    ACTIVATION_WORD,
+    "cold coffee",
+    "[[CB:MAX]]",
+    "[[ENI:PROFILE=MAX]]",
+    "ASTRA//UNLOCK",
+    "ANTHRO//CLEAR",
+    "GROK//OPEN",
+    "SEEK//BARE",
+    "GLM//STRAIGHT",
+)
+
+
+def is_activation_latch(prompt: str) -> bool:
+    return str(prompt or "").strip() in ACTIVATION_LATCHES
+
+
 def render_pack(seat_id: str) -> str:
     raw = (packs_dir() / f"{seat_id}.md").read_text(encoding="utf-8")
     text = (
@@ -63,6 +84,7 @@ def render_pack(seat_id: str) -> str:
         .replace("{{ACTIVATION_WORD}}", ACTIVATION_WORD)
         .replace("{{CONTROL_WORD}}", CONTROL_WORD)
         .replace("{{SEAT_ID}}", seat_id)
+        .replace("{{ACTIVATION_REPLY}}", activation_reply().rstrip())
     )
     return wrap_marked(seat_id, text)
 

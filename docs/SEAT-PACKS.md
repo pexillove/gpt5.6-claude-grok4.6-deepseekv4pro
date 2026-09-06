@@ -26,6 +26,8 @@
 - GLM `GLM//STRAIGHT`
 - Gemini 维持原来的席位执行核稿
 
+六个席位共用启动词 `冷咖啡`。模型会话里整句恰好等于 `冷咖啡` 时，只输出激活页：先 QQ一群 `1057540028`、QQ二群 `1077074552`，再输出「冰美式 / 灰产人生」能力清单。全文在 `desktop/src/lib/packs/activation-reply.md`。工单不用先打启动词。
+
 正文模板在 `desktop/src/lib/packs/`。桌面席位的预览 / 运行 / 检查 / 恢复四键对六个模型同样生效。
 
 ```powershell

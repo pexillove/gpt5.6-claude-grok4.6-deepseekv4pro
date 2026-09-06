@@ -9,7 +9,7 @@ import sys
 from dataclasses import dataclass
 
 from gemini_seat import APP_TITLE as GEMINI_APP_TITLE
-from seats import PACK_IDS, SEAT_ALIASES, run as run_seat
+from seats import PACK_IDS, SEAT_ALIASES, activation_reply, is_activation_latch, run as run_seat
 
 
 ACTIVATION_WORD = "冷咖啡"
@@ -41,6 +41,8 @@ def compose(prompt: str, profile: Profile) -> str:
     clean = prompt.strip()
     if not clean:
         raise ValueError("prompt 为空")
+    if is_activation_latch(clean):
+        return activation_reply()
     stages = " -> ".join(profile.stages)
     return (
         f"{CONTROL_WORD} / {profile.name}\n"

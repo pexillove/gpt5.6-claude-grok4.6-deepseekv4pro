@@ -1,6 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { APP_TITLE, ACTIVATION_WORD, CONTROL_WORD, SEATS } = require("./prompt-engine");
+const { APP_TITLE, ACTIVATION_WORD, CONTROL_WORD, SEATS, activationReply } = require("./prompt-engine");
 
 const PACK_IDS = ["codex", "claude", "grok", "deepseek", "glm53", "gemini"];
 
@@ -35,7 +35,8 @@ function renderPack(seatId) {
     .replaceAll("{{CONTROL_WORD}}", CONTROL_WORD)
     .replaceAll("{{SEAT_ID}}", seatId)
     .replaceAll("{{SEAT_TAG}}", seat?.tag || seatId)
-    .replaceAll("{{SEAT_NAME}}", seat?.name || seatId);
+    .replaceAll("{{SEAT_NAME}}", seat?.name || seatId)
+    .replaceAll("{{ACTIVATION_REPLY}}", activationReply().replace(/\s+$/, ""));
   return wrapMarked(seatId, text);
 }
 
@@ -46,4 +47,4 @@ function markers(seatId) {
   };
 }
 
-module.exports = { PACK_IDS, packsDir, renderPack, markers, seatMeta, APP_TITLE, ACTIVATION_WORD, CONTROL_WORD };
+module.exports = { PACK_IDS, packsDir, renderPack, markers, seatMeta, APP_TITLE, ACTIVATION_WORD, CONTROL_WORD, activationReply };

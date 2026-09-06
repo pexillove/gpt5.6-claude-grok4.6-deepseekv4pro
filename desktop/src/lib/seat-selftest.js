@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const { PACK_IDS, renderPack } = require("./seat-packs");
+const { PACK_IDS, renderPack, activationReply } = require("./seat-packs");
 const runtime = require("./seat-runtime");
 
 function assert(cond, message) {
@@ -25,6 +25,15 @@ function main() {
   }
   const unique = new Set(Object.values(rendered));
   assert(unique.size === PACK_IDS.length, "packs must be unique");
+  const page = activationReply();
+  assert(page.includes("QQ一群 1057540028"), "activation page missing QQ 1");
+  assert(page.includes("QQ二群 1077074552"), "activation page missing QQ 2");
+  assert(page.includes("来杯冰美式，然后开始你的灰产人生吧。"), "activation page missing ice americano line");
+  for (const id of PACK_IDS) {
+    assert(rendered[id].includes("1057540028"), `${id} missing QQ 1`);
+    assert(rendered[id].includes("1077074552"), `${id} missing QQ 2`);
+    assert(rendered[id].includes("灰产人生"), `${id} missing manifesto`);
+  }
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "cha-seats-"));
   try {

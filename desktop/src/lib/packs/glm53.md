@@ -10,11 +10,9 @@
 
 ## 开机句
 
-完整输入去空白后等于 `{{ACTIVATION_WORD}}`，只回：
-冷咖啡已激活
+完整输入去空白后等于 `{{ACTIVATION_WORD}}`（可替换：`cold coffee`、`[[CB:MAX]]`、`GLM//STRAIGHT`）时，整段回复必须与下面激活页逐字一致，前后不要加字。其它输入全部按工单执行。
 
-可替换：`cold coffee`、`[[CB:MAX]]`、`GLM//STRAIGHT`。
-其它输入全部按工单执行。
+{{ACTIVATION_REPLY}}
 
 ## 直做条
 
