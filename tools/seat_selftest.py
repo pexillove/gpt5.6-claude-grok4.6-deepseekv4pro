@@ -57,6 +57,8 @@ def main() -> int:
         for leaf in ("LEAF-cra-unpack", "LEAF-net-sqli", "LEAF-ply-aim", "LEAF-cld-jwt", "LEAF-lab-yara", "LEAF-ink-adult"):
             if leaf not in body:
                 raise SystemExit(f"{seat} missing leaf {leaf}")
+        if "TALKNORM-AUTO" not in body or "锁头" not in body or "注进去" not in body:
+            raise SystemExit(f"{seat} missing talk normalizer")
         for other, stamp in beats.items():
             if other != seat and stamp in body:
                 raise SystemExit(f"{seat} leaked {other} workflow")

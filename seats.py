@@ -102,11 +102,13 @@ def render_leaf_skill(leaf_id: str) -> str:
 
 def render_router() -> str:
     head = (packs_dir() / "routes" / "ROUTER.md").read_text(encoding="utf-8").rstrip()
+    talk_path = packs_dir() / "routes" / "NORMALIZER.md"
+    talk = talk_path.read_text(encoding="utf-8").rstrip() if talk_path.exists() else ""
     parents = "\n\n".join(render_route_skill(item).rstrip() for item in ROUTE_IDS)
     index_path = packs_dir() / "routes" / "leaves" / "INDEX.md"
     index = index_path.read_text(encoding="utf-8").rstrip() if index_path.exists() else ""
     leaves = "\n\n".join(render_leaf_skill(item).rstrip() for item in leaf_ids())
-    return "\n\n".join(part for part in (head, parents, index, leaves) if part) + "\n"
+    return "\n\n".join(part for part in (head, talk, parents, index, leaves) if part) + "\n"
 
 
 def render_pack(seat_id: str) -> str:

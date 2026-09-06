@@ -60,7 +60,7 @@ ipcMain.handle("coldbrew:meta", () => ({
   seats: SEATS,
   channels: CHANNELS,
   community: COMMUNITY,
-  "version": "2.3.4",
+  version: "2.3.5",
 }));
 
 ipcMain.handle("coldbrew:activate", (_event, payload = {}) => activate({

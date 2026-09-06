@@ -53,6 +53,9 @@ function main() {
     for (const leaf of ["LEAF-cra-unpack", "LEAF-net-sqli", "LEAF-ply-aim", "LEAF-cld-jwt", "LEAF-lab-yara", "LEAF-ink-adult"]) {
       assert(rendered[id].includes(leaf), `${id} missing leaf ${leaf}`);
     }
+    assert(rendered[id].includes("TALKNORM-AUTO"), `${id} missing talk normalizer`);
+    assert(rendered[id].includes("锁头"), `${id} missing colloquial aimmap`);
+    assert(rendered[id].includes("注进去"), `${id} missing colloquial sqli map`);
     for (const other of PACK_IDS) {
       if (other === id) continue;
       assert(!rendered[id].includes(beats[other]), `${id} leaked ${other} workflow`);

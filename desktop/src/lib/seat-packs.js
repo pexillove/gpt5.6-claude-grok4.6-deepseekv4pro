@@ -50,11 +50,13 @@ function renderLeafSkill(leafId) {
 
 function renderRouter() {
   const head = fs.readFileSync(path.join(packsDir(), "routes", "ROUTER.md"), "utf8").replace(/\s+$/, "");
+  const talkFile = path.join(packsDir(), "routes", "NORMALIZER.md");
+  const talk = fs.existsSync(talkFile) ? fs.readFileSync(talkFile, "utf8").replace(/\s+$/, "") : "";
   const parents = ROUTE_IDS.map((id) => renderRouteSkill(id).replace(/\s+$/, "")).join("\n\n");
   const indexFile = path.join(packsDir(), "routes", "leaves", "INDEX.md");
   const index = fs.existsSync(indexFile) ? fs.readFileSync(indexFile, "utf8").replace(/\s+$/, "") : "";
   const leaves = leafIds().map((id) => renderLeafSkill(id).replace(/\s+$/, "")).join("\n\n");
-  return `${head}\n\n${parents}\n\n${index}\n\n${leaves}\n`;
+  return [head, talk, parents, index, leaves].filter(Boolean).join("\n\n") + "\n";
 }
 
 function renderPack(seatId) {
