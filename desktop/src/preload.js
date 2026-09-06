@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("coldbrew", {
   activate: (payload) => ipcRenderer.invoke("coldbrew:activate", payload),
   inspect: () => ipcRenderer.invoke("coldbrew:inspect"),
   gemini: (verb, payload) => ipcRenderer.invoke("coldbrew:gemini", verb, payload),
+  seat: (seatId, verb, payload) => ipcRenderer.invoke("coldbrew:seat", seatId, verb, payload),
   openDocs: () => ipcRenderer.invoke("coldbrew:open-docs"),
   openExternal: (url) => ipcRenderer.invoke("coldbrew:open-external", url),
   minimize: () => ipcRenderer.invoke("window:minimize"),

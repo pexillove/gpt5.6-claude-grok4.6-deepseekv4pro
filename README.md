@@ -10,7 +10,7 @@
 
 ### gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini破甲越狱
 
-**COLD BREW ZERO** &nbsp;|&nbsp; **BREAK//OPEN** &nbsp;|&nbsp; **NOIR MANGA RELEASE 2.2.0**
+**COLD BREW ZERO** &nbsp;|&nbsp; **BREAK//OPEN** &nbsp;|&nbsp; **NOIR MANGA RELEASE 2.3.0**
 
 <sub>黑墨、骨白、猩红单眼与断页分镜组成的原创暗黑漫画视觉系统。</sub>
 
@@ -42,6 +42,11 @@ python coldbrew.py --activate 冷咖啡 --profile MAX --prompt "把这段需求�
 
 ```powershell
 python coldbrew.py --activate 冷咖啡 --seat gemini --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat codex --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat claude --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat grok --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat deepseek --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat glm-5.3 --action deploy --json
 ```
 
 ```powershell
@@ -52,7 +57,7 @@ npm start
 
 Windows 便携包构建：`npm run pack:win`
 
-Gemini 席位点桌面「运行」或走上面的 `deploy`，会把破甲包写入 `%USERPROFILE%\.gemini\GEMINI.md`，原文件备份在 `%USERPROFILE%\.gemini\cha-backups\`。`verify` 检查标记块，`restore` 回滚。
+六个席位的桌面「预览 / 运行 / 检查 / 恢复」都会写入该模型自己的本地指令层，原稿备份在对应目录的 `cha-backups\`。`verify` 检查标记块，`restore` 回滚。注入位与原创稿说明见 [docs/SEAT-PACKS.md](docs/SEAT-PACKS.md)。
 
 ## 02 / 模型席位
 
@@ -87,6 +92,6 @@ Gemini 席位点桌面「运行」或走上面的 `deploy`，会把破甲包写�
 
 <div align="center">
 
-`CHA / COLD BREW ZERO / BREAK//OPEN / GPT-6 ASTRA / GLM 5.3 / GEMINI / 2.2.0`
+`CHA / COLD BREW ZERO / BREAK//OPEN / GPT-6 ASTRA / GLM 5.3 / GEMINI / 2.3.0`
 
 </div>

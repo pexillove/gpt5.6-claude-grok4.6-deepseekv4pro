@@ -3,6 +3,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { ACTIVATION_WORD, CONTROL_WORD, APP_TITLE, PROFILES, SEATS, CHANNELS, activate } = require("./lib/prompt-engine");
 const geminiSeat = require("./lib/gemini-seat");
+const seatRuntime = require("./lib/seat-runtime");
 
 const COMMUNITY = {
   qq: [{ name: "交流群", value: "1057540028" }, { name: "专题群", value: "1077074552" }],
@@ -59,7 +60,7 @@ ipcMain.handle("coldbrew:meta", () => ({
   seats: SEATS,
   channels: CHANNELS,
   community: COMMUNITY,
-  version: "2.2.0",
+  version: "2.3.0",
 }));
 
 ipcMain.handle("coldbrew:activate", (_event, payload = {}) => activate({
@@ -69,21 +70,10 @@ ipcMain.handle("coldbrew:activate", (_event, payload = {}) => activate({
   prompt: payload.prompt,
 }));
 
-ipcMain.handle("coldbrew:inspect", () => {
-  const gemini = geminiSeat.verify();
-  return {
-    isolated: true,
-    mode: "explicit-input-only",
-    filesRead: gemini.exists ? 1 : 0,
-    localConfig: gemini.marker ? "Gemini GEMINI.md 已注入" : "未读取",
-    clipboard: "未读取",
-    environment: "未读取",
-    history: "未读取",
-    gemini,
-  };
-});
+ipcMain.handle("coldbrew:inspect", () => seatRuntime.inspectAll());
 
 ipcMain.handle("coldbrew:gemini", (_event, verb, payload = {}) => geminiSeat.run(verb, payload.home));
+ipcMain.handle("coldbrew:seat", (_event, seatId, verb, payload = {}) => seatRuntime.run(String(seatId || ""), verb, payload.home));
 
 ipcMain.handle("coldbrew:open-docs", async () => {
   const packagedDocs = path.join(process.resourcesPath, "public", "docs", "index.html");

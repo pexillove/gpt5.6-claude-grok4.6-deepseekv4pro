@@ -10,7 +10,7 @@
 
 ### gpt6 Astra-claude-grok4.6-deepseekv4pro-glm5.3-gemini
 
-**BREAK//OPEN** &nbsp;|&nbsp; **NOIR MANGA RELEASE 2.2.0**
+**BREAK//OPEN** &nbsp;|&nbsp; **NOIR MANGA RELEASE 2.3.0**
 
 <sub>An original dark-manga visual system built from black ink, bone paper, a single crimson eye, and torn comic panels.</sub>
 
@@ -34,6 +34,8 @@ python coldbrew.py --activate 冷咖啡 --profile MAX --prompt "Turn this reques
 
 ```powershell
 python coldbrew.py --activate 冷咖啡 --seat gemini --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat claude --action deploy --json
+python coldbrew.py --activate 冷咖啡 --seat grok --action deploy --json
 ```
 
 ```powershell
@@ -44,7 +46,7 @@ npm start
 
 Build the Windows portable package with `npm run pack:win`.
 
-The Gemini seat writes the pack into `%USERPROFILE%\.gemini\GEMINI.md`. Originals go to `%USERPROFILE%\.gemini\cha-backups\`. Use `verify` and `restore` for the marked block.
+All six seats write an original CHA pack into that model's local instruction files. Backups land in each home's `cha-backups\`. Use `verify` and `restore` for the marked block. See [docs/SEAT-PACKS.md](docs/SEAT-PACKS.md).
 
 ## 02 / Six Seats
 
@@ -79,6 +81,6 @@ The Gemini seat writes the pack into `%USERPROFILE%\.gemini\GEMINI.md`. Original
 
 <div align="center">
 
-`CHA / COLD BREW ZERO / BREAK//OPEN / GPT-6 ASTRA / GLM 5.3 / GEMINI / 2.2.0`
+`CHA / COLD BREW ZERO / BREAK//OPEN / GPT-6 ASTRA / GLM 5.3 / GEMINI / 2.3.0`
 
 </div>

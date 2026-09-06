@@ -79,24 +79,13 @@ function renderCommunity() {
 }
 
 async function runSeat(seat, verb) {
-  if (seat.id === "gemini") {
-    log(`${seat.tag} / ${verb.toUpperCase()} 开始`);
-    const result = await window.coldbrew.gemini(verb);
-    ui.output.textContent = JSON.stringify(result, null, 2);
-    if (result?.text) ui.output.textContent = result.text;
-    const ok = result?.ok !== false;
-    log(`${seat.tag} / ${verb.toUpperCase()} ${ok ? "完成" : "未完成"}`, ok ? "ok" : "error");
-    toast(ok ? `Gemini ${verb} 完成` : "Gemini 席位需要检查");
-    if (verb === "run" || verb === "check" || verb === "restore") await inspect();
-    return;
-  }
-  const prompt = ui.target.value.trim();
-  if (!prompt) { ui.target.focus(); toast("请先输入明确目标"); log(`${seat.tag} ${verb} 等待目标输入`, "warn"); return; }
   log(`${seat.tag} / ${verb.toUpperCase()} 开始`);
-  const result = verb === "check" ? await window.coldbrew.inspect() : await window.coldbrew.activate({ word: meta.activation, profile, channel, prompt });
-  if (!result?.ok && verb !== "check") { log(`${seat.tag} ${verb} 未完成`, "error"); ui.output.textContent = result?.error || "启动词不匹配"; return; }
-  ui.output.textContent = verb === "check" ? JSON.stringify(result, null, 2) : result.text;
-  log(`${seat.tag} / ${verb.toUpperCase()} 完成`, "ok"); toast(`${seat.tag} ${verb} 完成`);
+  const result = await window.coldbrew.seat(seat.id, verb);
+  ui.output.textContent = result?.text ? result.text : JSON.stringify(result, null, 2);
+  const ok = result?.ok !== false;
+  log(`${seat.tag} / ${verb.toUpperCase()} ${ok ? "完成" : "未完成"}`, ok ? "ok" : "error");
+  toast(ok ? `${seat.tag} ${verb} 完成` : `${seat.tag} 席位需要检查`);
+  if (verb === "run" || verb === "check" || verb === "restore") await inspect();
 }
 
 async function runMax() {
